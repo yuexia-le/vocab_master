@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2回滚验证，基于k8s的CI/CD部署9.1</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>VocabMaster</h1>
+            <a href="/admin" class="nav-btn">后台管理</a>
+        </header>
+
+        <div class="section-card">
+            <h3>📖 AI 故事助记</h3>
+            <button onclick="generateStory()">生成今日故事 (基于随机单词)</button>
+            <div id="story-box" style="margin-top: 15px; line-height: 1.6; color: #444;"></div>
+        </div>
+
+        <div class="section-card">
+            <h3>✍️ 造句特训</h3>
+            <p id="challenge-cn">加载中...</p>
+            <textarea id="user-input" rows="2" placeholder="输入你的英文翻译..."></textarea>
+            <div style="margin-top:10px;">
+                <button onclick="checkSentence()">检查答案</button>
+                <button onclick="loadSentence()">换一句</button>
+            </div>
+            <p id="answer-box" style="margin-top: 10px; display:none; color: var(--primary); font-weight: bold;"></p>
+        </div>
+
+        <div class="controls">
+            <span>显示模式：</span>
+            <button onclick="setView('all')" class="active" id="btn-all">全部显示</button>
+            <button onclick="setView('en')" id="btn-en">只看英文</button>
+            <button onclick="setView('cn')" id="btn-cn">只看中文</button>
+        </div>
+
+        <div id="word-list" class="word-grid">
+            </div>
+    </div>
+
+    <script src="/static/js/main.js"></script>
+</body>
+</html>

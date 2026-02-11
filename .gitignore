@@ -1,0 +1,112 @@
+# .gitignore - 完整优化版
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+ENV/
+env.bak/
+venv.bak/
+
+# 虚拟环境
+pythonenv*
+pip-log.txt
+pip-delete-this-directory.txt
+.pytest_cache/
+.coverage
+htmlcov/
+.coverage.*
+*.cover
+*.py,cover
+.tox/
+.mypy_cache/
+.dmypy.json
+dmypy.json
+hypothesis/
+.prof
+site/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+.project
+.classpath
+.settings/
+
+# 数据库（本地）
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+
+# 日志
+*.log
+logs/
+*.log.*
+
+# 测试报告（这些是大文件！）
+tests/report/
+allure-results/
+allure-report/
+test-results/
+
+# 环境变量
+.env
+config.local.py
+.secrets
+
+# 大文件
+*.zip
+*.tar
+*.gz
+*.rar
+*.7z
+*.exe
+*.dmg
+*.iso
+*.mp4
+*.mp3
+*.avi
+*.mov
+*.wmv
+*.flv
+*.mkv
+*.pdf
+*.xlsx
+*.docx
+*.pptx
+
+# 缓存
+.cache/
+.tmp/
+temp/
+*.tmp
+*.temp
+
+# 虚拟环境（防止误传）
+venv/
+.venv/
+env/
+ENV/
+
+# 忽略所有 __pycache__
+**/__pycache__/
+
+# 忽略所有 pyc 文件
+**/*.pyc
+
+# 但保留这个文件
+!run_tests.py
+!pytest.ini
+!setup.cfg"word/" 
+"word_selenium/"   
+"git" 

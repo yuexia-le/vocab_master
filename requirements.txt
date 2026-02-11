@@ -1,0 +1,8 @@
+allure_python_commons==2.15.3
+chardet==5.2.0
+Flask==3.1.2
+flask_sqlalchemy==3.1.1
+openai==2.20.0
+pytest==9.0.2
+selenium==4.40.0
+SQLAlchemy==2.0.46
