@@ -24,8 +24,14 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           
-          pip install -r requirements.txt
-          
+          # 强制卸载任何已安装的openai
+          pip uninstall openai -y || true
+          # 清理pip缓存
+          pip cache purge || true
+          # 强制安装指定版本
+          pip install --no-cache-dir --force-reinstall openai==1.6.1
+          # 安装其他依赖
+          pip install --no-cache-dir -r requirements.txt
           pip install pytest pytest-cov allure-pytest pytest-pythonpath
 
       - name: Diagnostic Workspace (Debug)
