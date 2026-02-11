@@ -35,8 +35,12 @@
   
 | Allure测试报告 |  |
 |:---:|:---:|
-<img width="590" height="467" alt="image" src="https://github.com/user-attachments/assets/93b262dc-2329-495b-97ea-3295a149df96" />
-**🔴 注意：**
+
+| ![总览](docs/images/allure/1.png) | 
+| ![单元](docs/images/allure/2.png) |
+| ![集成](docs/images/allure/3.png) |
+| ![集成](docs/images/allure/4.png) |
+| ![集成](docs/images/allure/5.png) |
 
 </div>
 
