@@ -90,7 +90,7 @@ class TestSentenceIntegration:
             response = test_client.get('/api/sentence')
             assert response.status_code == 200
             assert '生成失败' in response.get_json()['chinese']
-        print("✓ TC_SC_004 通过")
+        print("✓ TC_SC_004 通过.")
 
     
     @allure.title("5. AI 返回带 Markdown 标记的 JSON")
