@@ -43,6 +43,13 @@ jobs:
       env:
         PYTHONPATH: .  # 关键点：告诉 Python 在当前根目录查找 app 模块
         SILICONFLOW_API_KEY: ${{ secrets.SILICONFLOW_API_KEY }} # 顺便确保 Key 也加上了
+        # 核心修复：强制覆盖 GitHub 环境自带的代理变量
+        http_proxy: ""
+        https_proxy: ""
+        all_proxy: ""
+        HTTP_PROXY: ""
+        HTTPS_PROXY: ""
+        ALL_PROXY: ""
       run: |
         # 修复：清除环境中的代理变量，解决 openai 的 proxies 参数报错
         unset http_proxy
