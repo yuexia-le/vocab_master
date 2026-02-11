@@ -1,12 +1,13 @@
 # services.py
-import openai
+from openai import OpenAI
 from config import Config
 import json
+import os
 
 # 1. 初始化客户端：指向硅基流动
-client = openai.OpenAI(
-    api_key=Config.SILICONFLOW_API_KEY, 
-    base_url=Config.SILICONFLOW_BASE_URL
+client = OpenAI(
+    api_key=os.getenv("SILICONFLOW_API_KEY"),
+    base_url="https://api.siliconflow.cn/v1"
 )
 
 # 2. 定义模型名称
