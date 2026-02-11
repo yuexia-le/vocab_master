@@ -19,7 +19,18 @@ jobs:
         with:
           python-version: '3.11'
           cache: 'pip'
-
+      - name: Debug - Check files
+        run: |
+          echo "=== Current directory ==="
+          pwd
+          echo "=== List files ==="
+          ls -la
+          echo "=== List tests directory ==="
+          ls -la tests/
+          echo "=== Check requirements.txt ==="
+          cat requirements.txt
+          echo "=== Python version ==="
+          python --version
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
