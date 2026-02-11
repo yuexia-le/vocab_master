@@ -1,8 +1,19 @@
-allure_python_commons==2.15.3
+# requirements.txt - 修复版本
+Flask==2.3.3
+Flask-SQLAlchemy==3.1.1
+
+# 测试框架 - 修复为存在的版本
+pytest==8.3.3  # 不是9.0.2！
+pytest-cov==5.0.0
+allure-pytest==2.13.2
+
+# AI服务
+openai==1.6.1
+
+# 工具库
+python-dotenv==1.0.0
 chardet==5.2.0
-Flask==3.1.2
-flask_sqlalchemy==3.1.1
-openai==2.20.0
-pytest==9.0.2
-selenium==4.40.0
-SQLAlchemy==2.0.46
+requests==2.31.0
+
+# 数据库驱动
+PyMySQL==1.1.0
