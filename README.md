@@ -1,4 +1,4 @@
-<img width="590" height="467" alt="image" src="https://github.com/user-attachments/assets/93b262dc-2329-495b-97ea-3295a149df96" /># 📊 Vocab Master - 全流程测试自动化平台
+# 📊 Vocab Master - 全流程测试自动化平台
 
 <div align="center">
 
@@ -35,7 +35,7 @@
   
 | Allure测试报告 |  |
 |:---:|:---:|
-
+<img width="590" height="467" alt="image" src="https://github.com/user-attachments/assets/93b262dc-2329-495b-97ea-3295a149df96" />
 **🔴 注意：**
 
 </div>
