@@ -37,7 +37,7 @@ def main():
         print_header("运行单元测试")
         pytest_args.extend(['tests/unit/', '-m', 'unit'])
     elif args.integration:
-        print_header("运行集成测试")
+        print_header("运行集成测试.")
         pytest_args.extend(['tests/integration/', '-m', 'integration'])
     elif args.e2e:
         print_header("运行端到端测试")
