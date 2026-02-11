@@ -105,10 +105,25 @@ def generate_sentence_challenge(exclude_sentences=None):
         )
         
         if response.status_code == 200:
-            content = response.json()["choices"][0]["message"]["content"]
-            return json.loads(content)
+            content = response.text  # 使用 .text 而不是 .json()
+            
+            # 如果内容为空
+            if not content or content.strip() == '':
+                return {"chinese": "生成内容为空", "answer": "Error"}
+            
+            # 清理可能存在的 markdown 符号
+            content = content.strip()
+            content = content.replace('```json', '').replace('```', '').strip()
+            
+            # 尝试解析JSON
+            try:
+                return json.loads(content)
+            except json.JSONDecodeError:
+                print(f"JSON解析错误: {content}")
+                return {"chinese": "生成失败，请重试", "answer": "Error"}
         else:
-            return {"chinese": "生成失败，请重试", "answer": "Error"}
+            return {"chinese": f"生成失败: HTTP {response.status_code}", "answer": "Error"}
+            
     except Exception as e:
         print(f"Error: {e}")
         return {"chinese": "生成失败，请重试", "answer": "Error"}

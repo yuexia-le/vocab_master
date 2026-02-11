@@ -209,8 +209,13 @@ class TestSentenceChallenge:
     def test_generate_sentence_challenge_markdown_json(self, mock_post):
         """TC-SC-003: 返回带markdown的JSON"""
         mock_content = '```json\n{"chinese": "测试", "answer": "test"}\n```'
-        # ✅ 使用 is_json=False 模拟非JSON响应
-        mock_post.return_value = create_mock_response(mock_content, is_json=False)
+        
+        # 创建一个更真实的mock响应
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.text = mock_content  # 设置.text属性
+        mock_response.json.side_effect = ValueError("Invalid JSON")  # .json()抛出异常
+        mock_post.return_value = mock_response
         
         result = generate_sentence_challenge()
         
@@ -222,11 +227,16 @@ class TestSentenceChallenge:
     @allure.severity(NORMAL)
     @patch("services.requests.post")  # 🔥 修改这里
     def test_generate_sentence_challenge_empty_response(self, mock_post):
+       
         """TC-SC-004: 返回空内容"""
-        mock_post.return_value = create_mock_response('', is_json=False)
+        # 创建一个返回空内容的mock响应
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.text = ''  # 空内容
+        mock_response.json.side_effect = ValueError("Invalid JSON")
+        mock_post.return_value = mock_response
         
         result = generate_sentence_challenge()
-        
         
         assert "生成内容为空" in result["chinese"]
         assert result["answer"] == "Error"
