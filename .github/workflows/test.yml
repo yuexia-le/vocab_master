@@ -40,7 +40,11 @@ jobs:
         pip install pytest==8.3.3 pytest-cov==5.0.0 allure-pytest==2.13.2
     
     - name: Run tests
+      env:
+        PYTHONPATH: .  # 关键点：告诉 Python 在当前根目录查找 app 模块
+        SILICONFLOW_API_KEY: ${{ secrets.SILICONFLOW_API_KEY }} # 顺便确保 Key 也加上了
       run: |
+        mkdir -p tests/unit tests/integration allure-results
         if [ "${{ matrix.test-type }}" = "unit" ]; then
           pytest tests/unit/ -v --cov=app --cov-report=xml
         elif [ "${{ matrix.test-type }}" = "integration" ]; then
