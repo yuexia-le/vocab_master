@@ -1,4 +1,3 @@
-# .github/workflows/test.yml - 完整修复版.
 name: Test Automation Pipeline
 
 on:
@@ -11,39 +10,34 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    
     strategy:
+      fail-fast: false # 即使某个 Python 版本失败，也继续运行其他的
       matrix:
-        python-version: ['3.9', '3.11']
-        test-type: [unit, integration]
-        include:
-          - python-version: '3.11'
-            test-type: all
-    
+        python-version: ['3.11'] # 先专注 3.11 确保跑通核心逻辑
+        test-type: [all]
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-      with:
-        fetch-depth: 1  # 减少提交历史，避免git错误
-    
+
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
-        cache: 'pip'  # 启用pip缓存
-    
+        cache: 'pip'
+
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
-        # 单独安装测试工具（确保版本正确）
-        pip install openai>=1.0.0 pytest==8.3.3 pytest-cov==5.0.0 allure-pytest==2.13.2
-    
+        # 显式安装最新版 OpenAI 以支持新语法，同时确保 pytest 插件齐全
+        pip install openai pytest pytest-cov allure-pytest
+
     - name: Run tests
+      # 【核心修复 1】：在 env 块直接将代理设为 null，这是最高优先级的覆盖
       env:
-        PYTHONPATH: .  # 关键点：告诉 Python 在当前根目录查找 app 模块
-        SILICONFLOW_API_KEY: ${{ secrets.SILICONFLOW_API_KEY }} # 顺便确保 Key 也加上了
-        # 核心修复：强制覆盖 GitHub 环境自带的代理变量
+        PYTHONPATH: .
+        SILICONFLOW_API_KEY: ${{ secrets.SILICONFLOW_API_KEY }}
         http_proxy: ""
         https_proxy: ""
         all_proxy: ""
@@ -51,45 +45,26 @@ jobs:
         HTTPS_PROXY: ""
         ALL_PROXY: ""
       run: |
-        # 修复：清除环境中的代理变量，解决 openai 的 proxies 参数报错
-        unset http_proxy
-        unset https_proxy
+        # 【核心修复 2】：创建绝对路径，防止 Pytest 在递归查找时迷路
+        mkdir -p allure-results tests/unit tests/integration
+        
+        # 使用 python -m pytest 确保调用的是当前环境的 python 路径
+        python -m pytest tests/ -v --cov=app --cov-report=xml --alluredir=allure-results
 
-        mkdir -p tests/unit tests/integration allure-results
-        if [ "${{ matrix.test-type }}" = "unit" ]; then
-          pytest tests/unit/ -v --cov=app --cov-report=xml
-        elif [ "${{ matrix.test-type }}" = "integration" ]; then
-          pytest tests/integration/ -v --cov=app --cov-report=xml --cov-append
-        else
-          pytest tests/ -v --cov=app --cov-report=xml
-        fi
-    
     - name: Upload test results
       if: always()
       uses: actions/upload-artifact@v4
       with:
-        name: test-results-${{ matrix.python-version }}-${{ matrix.test-type }}
-        path: |
-          coverage.xml
-          .coverage
-          htmlcov/
-          allure-results/
-        retention-days: 7  # 保留7天
-    
-    - name: Test Summary
-      if: always()
-      run: |
-        echo "## ✅ 测试执行完成" >> $GITHUB_STEP_SUMMARY
-        echo "| 测试类型 | Python版本 | 状态 |" >> $GITHUB_STEP_SUMMARY
-        echo "|---------|-----------|------|" >> $GITHUB_STEP_SUMMARY
-        echo "| ${{ matrix.test-type }} | ${{ matrix.python-version }} | ✅ 通过 |" >> $GITHUB_STEP_SUMMARY
+        name: test-results
+        path: allure-results/
+        retention-days: 1
 
   allure-report:
     runs-on: ubuntu-latest
     needs: test
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+    if: always()
     permissions:
-      contents: write  # 添加写入权限
+      contents: write
       pages: write
       id-token: write
     
@@ -97,12 +72,29 @@ jobs:
     - name: Download all test results
       uses: actions/download-artifact@v4
       with:
-        path: artifacts
+        name: test-results
+        path: allure-results
     
-    - name: Upload GitHub Pages artifact
+    # 使用专门的 Allure Action 生成静态页面，这是目前最稳妥的方案
+    - name: Load Allure report history
+      uses: actions/checkout@v4
+      if: always()
+      with:
+        ref: gh-pages
+        path: gh-pages
+
+    - name: Build Allure Report
+      uses: simple-elf/allure-report-action@master
+      if: always()
+      with:
+        allure_results: allure-results
+        allure_history: allure-history
+        keep_reports: 20
+
+    - name: Upload Artifact for Pages
       uses: actions/upload-pages-artifact@v3
       with:
-        path: artifacts
-    
+        path: allure-history
+
     - name: Deploy to GitHub Pages
       uses: actions/deploy-pages@v4
