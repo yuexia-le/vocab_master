@@ -1,4 +1,4 @@
-# 📊 Vocab Master - 全流程测试自动化平台
+<img width="590" height="467" alt="image" src="https://github.com/user-attachments/assets/93b262dc-2329-495b-97ea-3295a149df96" /># 📊 Vocab Master - 全流程测试自动化平台
 
 <div align="center">
 
@@ -12,7 +12,6 @@
 **一个展示专业测试能力的完整项目 | 单元测试 + 集成测试 + CI/CD + Allure可视化报告**
 
 [📊 查看Allure测试报告](https://yuexia-le.github.io/vocab_master/allure-reports) | 
-[⚙️ CI/CD流水线](https://github.com/yuexia-le/vocab_master/actions) | 
 [📁 项目源码](https://github.com/yuexia-le/vocab_master)
 
 </div>
@@ -34,11 +33,10 @@
 
 <div align="center">
   
-| Allure测试报告 | CI/CD流水线 |
+| Allure测试报告 |
 |:---:|:---:|
-| ![Allure报告](https://via.placeholder.com/400x200?text=Allure+Test+Report) | ![CI流水线](https://via.placeholder.com/400x200?text=GitHub+Actions) |
+<img width="590" height="467" alt="image" src="https://github.com/user-attachments/assets/918bc0d7-f35b-4a13-8e9c-13a3624ffbf7" />
 
-**🔴 注意：以上截图占位符，请替换为你的实际截图**
 
 </div>
 
