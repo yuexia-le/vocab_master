@@ -120,4 +120,4 @@ class TestSentenceIntegration:
             assert RECENT_SENTENCE_CHALLENGES[0] is not None
             assert RECENT_SENTENCE_CHALLENGES[0]['chinese'] == '测试 Markdown 解析'
             
-        print("✓ TC_SC_005 通过：带 Markdown 的 JSON 处理正确")
+        print("TC_SC_005 通过：带 Markdown 的 JSON 处理正确")
