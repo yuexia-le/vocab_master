@@ -33,10 +33,10 @@
 
 <div align="center">
   
-| Allure测试报告 |
+| Allure测试报告 |  |
 |:---:|:---:|
-<img width="590" height="467" alt="image" src="https://github.com/user-attachments/assets/918bc0d7-f35b-4a13-8e9c-13a3624ffbf7" />
 
+**🔴 注意：**
 
 </div>
 
