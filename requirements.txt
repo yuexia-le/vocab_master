@@ -1,19 +1,10 @@
-# requirements.txt - 修复版本
 Flask==2.3.3
 Flask-SQLAlchemy==3.1.1
-
-# 测试框架 - 修复为存在的版本
-pytest==8.3.3  # 不是9.0.2！
+pytest==8.3.3
 pytest-cov==5.0.0
 allure-pytest==2.13.2
-
-# AI服务
 openai==1.6.1
-
-# 工具库
 python-dotenv==1.0.0
 chardet==5.2.0
 requests==2.31.0
-
-# 数据库驱动
 PyMySQL==1.1.0
