@@ -26,21 +26,26 @@ jobs:
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
           pip install openai pytest pytest-cov allure-pytest pytest-pythonpath
 
+      - name: Diagnostic Workspace (Debug)
+        run: |
+          echo "Current Path: $(pwd)"
+          ls -R
+
       - name: Run tests
         env:
-          PYTHONPATH: .
+          # 使用绝对路径确保模块导入正确
+          PYTHONPATH: ${{ github.workspace }}
           SILICONFLOW_API_KEY: ${{ secrets.SILICONFLOW_API_KEY }}
           HTTP_PROXY: ""
           HTTPS_PROXY: ""
         run: |
+          # 确保结果目录干净
+          rm -rf allure-results
           mkdir -p allure-results
-          # 关键：强制 pytest 从当前工作目录 (.) 递归搜索所有 test_ 开头的文件
-          python -m pytest . -v --alluredir=allure-results || echo "测试执行完毕"
           
-          # 兜底：如果没搜到用例，创建一个空报告防止后续任务崩溃
-          if [ -z "$(ls -A allure-results)" ]; then
-            echo '{"name":"No tests found","status":"passed"}' > allure-results/dummy.json
-          fi
+          # 运行测试：直接指定 tests 文件夹
+          # 去掉执行保护，让错误真实暴露
+          python -m pytest tests/ -v --alluredir=allure-results
 
       - name: Upload results
         if: always()
@@ -75,8 +80,11 @@ jobs:
 
       - name: Upload Pages Artifact
         uses: actions/upload-pages-artifact@v3
+        if: always()
         with:
+          # 必须指向 simple-elf 插件生成的报告存放目录
           path: allure-history
 
       - name: Deploy to GitHub Pages
         uses: actions/deploy-pages@v4
+        if: always()
