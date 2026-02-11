@@ -25,19 +25,29 @@ CRITICAL = allure.severity_level.CRITICAL
 NORMAL = allure.severity_level.NORMAL
 
 # ==================== 辅助函数 ====================
-def create_mock_response(content, status_code=200):
+def create_mock_response(content, status_code=200, is_json=True):
     """创建模拟的requests响应对象"""
     mock_response = MagicMock()
     mock_response.status_code = status_code
-    mock_response.json.return_value = {
-        "choices": [
-            {
-                "message": {
-                    "content": content
+    
+    if is_json:
+        # 模拟JSON响应
+        mock_response.json.return_value = {
+            "choices": [
+                {
+                    "message": {
+                        "content": content
+                    }
                 }
-            }
-        ]
-    }
+            ]
+        }
+    else:
+        # 模拟非JSON响应（如markdown、空内容等）
+        mock_response.json.side_effect = ValueError("Invalid JSON")
+    
+    # 模拟 .text 属性
+    mock_response.text = content
+    
     return mock_response
 
 # ==================== 翻译功能测试 ====================
@@ -194,17 +204,18 @@ class TestSentenceChallenge:
 
     @allure.story("数据处理")
     @allure.title("Markdown代码块处理")
-    @allure.severity(NORMAL)
-    @patch("services.requests.post")  # 🔥 修改这里
+    @allure.severity(allure.severity_level.NORMAL)
+    @patch("services.requests.post")
     def test_generate_sentence_challenge_markdown_json(self, mock_post):
         """TC-SC-003: 返回带markdown的JSON"""
-        mock_post.return_value = create_mock_response('```json\n{"chinese": "测试", "answer": "test"}\n```')
+        mock_content = '```json\n{"chinese": "测试", "answer": "test"}\n```'
+        # ✅ 使用 is_json=False 模拟非JSON响应
+        mock_post.return_value = create_mock_response(mock_content, is_json=False)
         
         result = generate_sentence_challenge()
         
-        with allure.step("验证Markdown标记被正确移除"):
-            assert result["chinese"] == "测试"
-            assert result["answer"] == "test"
+        assert result["chinese"] == "测试"
+        assert result["answer"] == "test"
 
     @allure.story("异常处理")
     @allure.title("空内容处理")
@@ -212,13 +223,13 @@ class TestSentenceChallenge:
     @patch("services.requests.post")  # 🔥 修改这里
     def test_generate_sentence_challenge_empty_response(self, mock_post):
         """TC-SC-004: 返回空内容"""
-        mock_post.return_value = create_mock_response('')
+        mock_post.return_value = create_mock_response('', is_json=False)
         
         result = generate_sentence_challenge()
         
-        with allure.step("验证返回空内容错误提示"):
-            assert "生成内容为空" in result["chinese"]
-            assert result["answer"] == "Error"
+        
+        assert "生成内容为空" in result["chinese"]
+        assert result["answer"] == "Error"
 
     @allure.story("业务逻辑")
     @allure.title("排除重复句子功能")
