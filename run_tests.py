@@ -12,7 +12,7 @@ def print_header(text):
 
 def main():
     parser = argparse.ArgumentParser(description='Word-Lingo 测试运行工具')
-    parser.add_argument('--unit', action='store_true', help='运行单元测试')
+    parser.add_argument('--unit', action='store_true', help='运行单元测试.')
     parser.add_argument('--integration', action='store_true', help='运行集成测试')
     parser.add_argument('--e2e', action='store_true', help='运行端到端流程测试')
     parser.add_argument('--all', action='store_true', help='运行所有测试')
