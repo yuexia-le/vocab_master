@@ -1,4 +1,4 @@
-# .github/workflows/test.yml - 完整修复版
+# .github/workflows/test.yml - 完整修复版.
 name: Test Automation Pipeline
 
 on:
