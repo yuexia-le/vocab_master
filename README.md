@@ -41,6 +41,7 @@
 | ![集成](docs/images/allure/3.png) |
 | ![集成](docs/images/allure/4.png) |
 | ![集成](docs/images/allure/5.png) |
+| ![接口](docs/images/allure/6.png) |
 
 </div>
 
