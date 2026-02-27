@@ -220,6 +220,4 @@ postman接口功能测试
     "message": "成功导入 0 个新单词",
     "new_words": []
 }
-<div>
-| ![总览](docs/images/allure/6.png) | 
-</div>
+![总览](docs/images/allure/6.png)
