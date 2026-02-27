@@ -1,4 +1,4 @@
-# services.py - 完全移除proxies参数
+# services.py
 import os
 import json
 from config import Config
@@ -6,9 +6,10 @@ from config import Config
 # 直接使用底层http客户端，绕过OpenAI客户端的proxies问题
 import requests
 
-API_KEY = os.getenv("SILICONFLOW_API_KEY", Config.SILICONFLOW_API_KEY)
-BASE_URL = "https://api.siliconflow.cn/v1"
-MODEL_NAME = "deepseek-ai/DeepSeek-V3"
+API_KEY = os.getenv("DEEPSEEK_API_KEY", Config.DEEPSEEK_API_KEY)
+#"https://api.siliconflow.cn/v1"
+BASE_URL = "https://api.deepseek.com"
+MODEL_NAME = "deepseek-chat"
 
 def get_translation(word):
     """获取单词翻译"""
@@ -17,7 +18,7 @@ def get_translation(word):
     
     try:
         response = requests.post(
-            f"{BASE_URL}/chat/completions",
+            f"{BASE_URL}/v1/chat/completions",
             headers={
                 "Authorization": f"Bearer {API_KEY}",
                 "Content-Type": "application/json"
@@ -40,6 +41,7 @@ def get_translation(word):
             return f"翻译服务暂时不可用: {response.status_code}"
     except Exception as e:
         print(f"AI Error: {e}")
+        
         return "翻译服务暂时不可用"
 
 def generate_story(words_list):
@@ -52,7 +54,7 @@ def generate_story(words_list):
     words_str = ", ".join(words_list)
     try:
         response = requests.post(
-            f"{BASE_URL}/chat/completions",
+            f"{BASE_URL}/v1/chat/completions",
             headers={
                 "Authorization": f"Bearer {API_KEY}",
                 "Content-Type": "application/json"
@@ -87,7 +89,7 @@ def generate_sentence_challenge(exclude_sentences=None):
 
     try:
         response = requests.post(
-            f"{BASE_URL}/chat/completions",
+            f"{BASE_URL}/v1/chat/completions",
             headers={
                 "Authorization": f"Bearer {API_KEY}",
                 "Content-Type": "application/json"
@@ -99,31 +101,49 @@ def generate_sentence_challenge(exclude_sentences=None):
                     {"role": "user", "content": prompt}
                 ],
                 "temperature": 0.7,
-                "response_format": {"type": "json_object"}
+                #"response_format": {"type": "json_object"}
             },
             timeout=30
         )
         
         if response.status_code == 200:
-            content = response.text  # 使用 .text 而不是 .json()
-            
-            # 如果内容为空
-            if not content or content.strip() == '':
-                return {"chinese": "生成内容为空", "answer": "Error"}
+            # 获取响应内容
+            result = response.json()
+            content = result["choices"][0]["message"]["content"].strip()
             
             # 清理可能存在的 markdown 符号
-            content = content.strip()
             content = content.replace('```json', '').replace('```', '').strip()
             
             # 尝试解析JSON
             try:
-                return json.loads(content)
-            except json.JSONDecodeError:
-                print(f"JSON解析错误: {content}")
-                return {"chinese": "生成失败，请重试", "answer": "Error"}
+                # 查找JSON内容（有时候AI会返回额外文字）
+                import re
+                json_match = re.search(r'\{.*\}', content, re.DOTALL)
+                if json_match:
+                    content = json_match.group()
+                
+                data = json.loads(content)
+                # 确保返回的数据包含必要的字段
+                if "chinese" in data and "answer" in data:
+                    return data
+                else:
+                    print(f"返回数据缺少必要字段: {data}")
+                    return {"chinese": "生成失败，格式错误", "answer": "Error"}
+                    
+            except json.JSONDecodeError as e:
+                print(f"JSON解析错误: {e}")
+                print(f"原始内容: {content}")
+                
+                # 备选方案：尝试从文本中提取
+                return {"chinese": content[:50], "answer": "请重试"}
         else:
+            # 打印详细的错误信息
+            print(f"API错误: {response.status_code}")
+            print(f"响应内容: {response.text}")
             return {"chinese": f"生成失败: HTTP {response.status_code}", "answer": "Error"}
             
     except Exception as e:
         print(f"Error: {e}")
+        import traceback
+        traceback.print_exc()
         return {"chinese": "生成失败，请重试", "answer": "Error"}

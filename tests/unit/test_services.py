@@ -25,13 +25,14 @@ CRITICAL = allure.severity_level.CRITICAL
 NORMAL = allure.severity_level.NORMAL
 
 # ==================== 辅助函数 ====================
+#参数：内容、状态码200、是否是JSON，根据源码设置
 def create_mock_response(content, status_code=200, is_json=True):
     """创建模拟的requests响应对象"""
     mock_response = MagicMock()
     mock_response.status_code = status_code
     
     if is_json:
-        # 模拟JSON响应
+        # 设置json方法的返回值
         mock_response.json.return_value = {
             "choices": [
                 {
@@ -45,7 +46,7 @@ def create_mock_response(content, status_code=200, is_json=True):
         # 模拟非JSON响应（如markdown、空内容等）
         mock_response.json.side_effect = ValueError("Invalid JSON")
     
-    # 模拟 .text 属性
+    # 模拟 .text 属性、获取响应体文本内容
     mock_response.text = content
     
     return mock_response
@@ -58,7 +59,7 @@ class TestTranslation:
     @allure.story("正常翻译流程")
     @allure.title("成功获取单词翻译")
     @allure.severity(BLOCKER)
-    @patch("services.requests.post")  # 🔥 修改这里
+    @patch("services.requests.post")
     def test_get_translation_success(self, mock_post):
         """TC-TR-001: 正常翻译流程"""
         test_word = "apple"
@@ -72,6 +73,7 @@ class TestTranslation:
             assert result == expected_translation
         
         with allure.step("验证AI被正确调用"):
+            # 验证requests.post被调用了一次
             mock_post.assert_called_once()
             call_args = mock_post.call_args[1]  # 获取kwargs
             messages = call_args['json']['messages']
@@ -83,14 +85,14 @@ class TestTranslation:
     @allure.severity(CRITICAL)
     def test_get_translation_api_key_missing(self):
         """TC-TR-002: API Key缺失异常"""
-        with patch("services.API_KEY", new=''):  # 🔥 修改这里
+        with patch("services.API_KEY", new=''):  
             result = get_translation("test")
             assert result == "请配置 API KEY"
 
     @allure.story("异常处理")
     @allure.title("AI服务调用异常处理")
     @allure.severity(CRITICAL)
-    @patch("services.requests.post")  # 🔥 修改这里
+    @patch("services.requests.post")  
     def test_get_translation_api_exception(self, mock_post):
         """TC-TR-003: AI服务异常"""
         mock_post.side_effect = Exception("翻译服务暂时不可用")
@@ -142,10 +144,11 @@ class TestTranslation:
         ("test@example", "测试@示例"),
         ("a&b", "A和B"),
     ])
-    @patch("services.requests.post")  # 🔥 修改这里
+    @patch("services.requests.post")
     def test_get_translation_special_characters(self, mock_post, word, expected):
         """TC-TR-006: 特殊字符处理"""
         mock_post.return_value = create_mock_response(expected)
+        # 重置mock
         mock_post.reset_mock()
         
         result = get_translation(word)
@@ -225,7 +228,7 @@ class TestSentenceChallenge:
     @allure.story("异常处理")
     @allure.title("空内容处理")
     @allure.severity(NORMAL)
-    @patch("services.requests.post")  # 🔥 修改这里
+    @patch("services.requests.post")  
     def test_generate_sentence_challenge_empty_response(self, mock_post):
        
         """TC-SC-004: 返回空内容"""

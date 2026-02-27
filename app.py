@@ -91,8 +91,6 @@ def upload_file():
         return jsonify({'error': '文件解码失败'}), 400
 
     # 情况 2：检测是否是二进制乱码（比如图片）
-    # 我们只对“非空字符串”进行乱码检测
-    # 如果字符串里包含 \x00 (零字节)，通常它是二进制文件，直接拦截
     if '\x00' in content:
         return jsonify({'error': '文件内容非法：检测到二进制流'}), 400
 
